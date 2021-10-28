@@ -74,15 +74,18 @@ class MainActivity : AppCompatActivity() {
         // === END IF STATEMENT ===
 
         lemonImage = findViewById(R.id.image_lemon_state)
-        setViewElements()
-        lemonImage!!.setOnClickListener {
 
-            clickLemonImage()
-        }
+
+        lemonImage!!.setOnClickListener { setViewElements()
+                                           clickLemonImage()}
+
+        setViewElements()
+        clickLemonImage()
+
         lemonImage!!.setOnLongClickListener {
             showSnackbar()
             // TODO: replace 'false' with a call to the function that shows the squeeze count
-            false
+
         }
     }
 
@@ -103,20 +106,21 @@ class MainActivity : AppCompatActivity() {
      * This method determines the state and proceeds with the correct action.
      */
     private fun clickLemonImage() {
-        if (lemonadeState == SELECT) {
-            lemonadeState == SQUEEZE
-            lemonSize = lemonTree.pick()
-            squeezeCount == 0
-        } else
-            if (lemonadeState == SQUEEZE) {
-                squeezeCount = squeezeCount + 1
-                lemonSize = lemonSize - 1}
-                if (lemonSize == 0) {lemonadeState = DRINK}
-             else if (lemonadeState == DRINK) {
-                lemonadeState == RESTART
-                lemonSize = -1
-            } else lemonadeState == SELECT
-        setViewElements()
+        when (lemonadeState) {
+            SELECT -> { lemonSize = LemonTree().pick()
+                        squeezeCount = 0
+                        lemonadeState = SQUEEZE
+                    }
+            SQUEEZE -> { if(lemonSize >= 0) {
+                squeezeCount++
+                lemonSize--
+            } else {lemonadeState = DRINK }  }
+            DRINK ->{ lemonSize = -1
+                      lemonadeState = RESTART
+                        }
+            else -> lemonadeState = SELECT
+
+        }
     }
 
 
@@ -125,34 +129,34 @@ class MainActivity : AppCompatActivity() {
      * Set up the view elements according to the state.
      */
     private fun setViewElements() {
-
-
-        // TODO: set up a conditional that tracks the lemonadeState
-
-        // TODO: for each state, the textAction TextView should be set to the corresponding string from
-        //  the string resources file. The strings are named to match the state
-
+        var lemonText: TextView = findViewById(R.id.text_action)
 
         when (lemonadeState)
-        {
-           SELECT -> updateUI(R.string.lemon_select, R.drawable.lemon_tree)
-            SQUEEZE-> updateUI(R.string.lemon_squeeze, R.drawable.lemon_squeeze)
-            DRINK ->  updateUI(R.string.lemon_drink, R.drawable.lemon_drink)
-            RESTART-> updateUI(R.string.lemon_empty_glass, R.drawable.lemon_restart)
+        {   SELECT ->{ lemonImage!!.setImageResource(R.drawable.lemon_tree)
+                       lemonText.text= getString(R.string.lemon_select) }
+            SQUEEZE -> { lemonImage!!.setImageResource(R.drawable.lemon_squeeze)
+                         lemonText.setText(R.string.lemon_squeeze)
+            }
+            DRINK -> { lemonImage!!.setImageResource(R.drawable.lemon_drink)
+                       lemonText.text= getString(R.string.lemon_drink) }
+            else -> { lemonImage!!
+                .setImageResource(R.drawable.lemon_restart)
+                       lemonText.text= getString(R.string.lemon_empty_glass) }
+
         }
-        
+
 
         // TODO: Additionally, for each state, the lemonImage should be set to the corresponding
         //  drawable from the drawable resources. The drawables have the same names as the strings
         //  but remember that they are drawables, not strings.
     }
 
-    private fun updateUI(displayText: Int, displayImage: Int) {
-        val textAction: TextView = findViewById(R.id.text_action)
-        textAction.setText(displayText)
-        lemonImage?.setImageResource(displayImage)
-        TODO("Not yet implemented")
-    }
+//    private fun updateUI(displayText: Int, displayImage: Int) {
+//        val textAction: TextView = findViewById(R.id.text_action)
+//        textAction.setText(displayText)
+//        lemonImage?.setImageResource(displayImage)
+//        TODO("Not yet implemented")
+//    }
 
     /**
      * === DO NOT ALTER THIS METHOD ===
